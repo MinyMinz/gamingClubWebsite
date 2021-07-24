@@ -1,0 +1,63 @@
+﻿@using Microsoft.AspNet.Identity
+
+@model Gaming_Club.Models.DynamicModel
+
+@{
+    ViewBag.Title = "Checkout";
+    double total = 0;
+  
+}
+
+<h2>Order Confirmation</h2>
+
+
+<table class="table" >
+    <tr>
+        <th>Item Name </th>
+        <th>Description</th>
+        <th>Game</th>
+        <th>Quantity</th>
+        <th>PPU</th>
+    </tr>
+
+    @foreach (var item in Model.Market)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ItemName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ItemDescription)
+            </td>
+            <td>
+
+                @foreach (var game in Model.Games)
+                {
+                    if (game.GameGUID == item.GameGUID)
+                    {
+                        @game.GameName;
+                    }
+                }
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Quantity)
+            </td>
+            <td>
+                £@Html.DisplayFor(modelItem => item.PPU)
+                @{
+                    total += item.PPU * item.Quantity;
+                }
+            </td>
+        </tr>
+    }
+</table>
+<br />
+<h4 style="margin-right: auto; margin-left: auto;">Order Total: £@total.ToString("0.00")</h4>
+<h4 style="margin-left: auto; margin-right: auto;"> Order Date: @DateTime.Now.ToString("dd-MM-yyyy")</h4>
+<br/>
+<button>
+    Pay Now
+</button>
+
+
+

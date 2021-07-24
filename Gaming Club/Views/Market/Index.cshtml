@@ -1,0 +1,151 @@
+﻿@using Microsoft.AspNet.Identity
+@model Gaming_Club.Models.DynamicModel
+
+@{
+    ViewBag.Title = "Index";
+    int count = 0;
+}
+
+<h2>Marketplace</h2>
+
+<p>
+    @Html.ActionLink("List New Item", "Create")
+</p>
+
+<table class="table" id="sales">
+    <tr>
+        <th>
+            @Html.ActionLink("Item Name", "Index", new { SortOrder = ViewBag.ItemName })
+            <br />
+            <input type="text" id="itemsearch" onkeyup="filtertable(0,this.id)" placeholder="Search for item name">
+        </th>
+        <th>
+            @Html.ActionLink("Description", "Index", new { SortOrder = ViewBag.ItemDescription })
+            <br />
+            <input type="text" id="descsearch" onkeyup="filtertable(1,this.id)" placeholder="Search for description">
+        </th>
+        <th>
+            @Html.ActionLink("Game", "Index", new { SortOrder = ViewBag.Game })
+            <br />
+            <input type="text" id="gamesearch" onkeyup="filtertable(2,this.id)" placeholder="Search for game">
+        </th>
+        <th>
+            @Html.ActionLink("Quantity", "Index", new { SortOrder = ViewBag.Quantity })
+        </th>
+        <th>
+            @Html.ActionLink("PPU", "Index", new { SortOrder = ViewBag.PPU })
+            <br />
+        </th>
+        <th>
+            @Html.ActionLink("Seller", "Index", new { SortOrder = ViewBag.Username })
+            <br />
+            <input type="text" id="usersearch" onkeyup="filtertable(5,this.id)" placeholder="Search for username/ email">
+        </th>
+        <th>
+            @Html.ActionLink("Date Listed", "Index", new { SortOrder = ViewBag.ListedDate })
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model.Market)
+    {
+        using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+
+            bool SeState = false;
+            count++;
+
+            if (Session["basket"] != null)
+            {
+                Dictionary<Guid?, int> basket = new Dictionary<Guid?, int>();
+                basket = (Dictionary<Guid?, int>)Session["basket"];
+
+                foreach (var basketItem in basket)
+                {
+                    if (basketItem.Key == item.SalesGUID)
+                    {
+                        SeState = true;
+                        break;
+                    }
+                }
+
+                if (SeState == true)
+                {
+                    count--;
+                    continue;
+                }
+            }
+
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ItemName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ItemDescription)
+                </td>
+                <td>
+
+                    @foreach (var game in Model.Games)
+                    {
+                        if (game.GameGUID == item.GameGUID)
+                        {
+                            @game.GameName;
+                        }
+                    }
+                </td>
+                <td>
+                    @if (item.UserId == User.Identity.GetUserId())
+                    {
+                        @Html.DisplayFor(modelItem => item.Quantity)
+                    }
+                    else
+                    {
+                        <div class="form-group">
+                            @Html.EditorFor(modelItem => item.Quantity, new { htmlAttributes = new { @class = "form-control", Min = "1", Max = item.Quantity, Value = "1" } })
+                            @Html.ValidationMessageFor(modelItem => item.Quantity, "", new { @class = "text-danger" })
+                        </div>
+                        <p>(Max:  @Html.DisplayFor(modelItem => item.Quantity) )</p>}
+                </td>
+                <td>
+                    £@item.PPU.ToString("0.00")
+                </td>
+                <td>
+                    @foreach (var user in Model.Users)
+                    {
+                        if (user.Id == item.UserId)
+                        {
+                            @user.UserName;
+                        }
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ListedDate)
+                </td>
+                <td>
+
+                    @if (item.UserId == User.Identity.GetUserId())
+                    {
+                        @Html.ActionLink("Edit", "Edit", new { id = item.SalesGUID })
+                        <span>|</span>
+                        @Html.ActionLink("Remove", "Delete", new { id = item.SalesGUID })
+                    }
+                    else
+                    {
+                        @Html.HiddenFor(modelItem => item.SalesGUID, htmlAttributes: new { Value = item.SalesGUID })
+                        <input type="submit" value="Add to Cart" class="btn btn-default" />
+                    }
+                    <span>|</span>
+                    @Html.ActionLink("Details", "Details", new { id = item.SalesGUID })
+                </td>
+            </tr>
+        }
+    }
+</table>
+
+@if (count == 0)
+{
+    <text>No Items available</text>
+}
+
+

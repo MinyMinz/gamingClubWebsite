@@ -1,0 +1,88 @@
+﻿@using Microsoft.AspNet.Identity
+@model Gaming_Club.Models.DynamicModel
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Market</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            <span>Item Name</span>
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.marketItem.ItemName)
+        </dd>
+
+        <dt>
+            <span>Game</span>
+        </dt>
+
+        <dd>
+            @foreach (var game in Model.Games)
+            {
+                if (game.GameGUID == Model.marketItem.GameGUID)
+                {
+                    @game.GameName;
+                }
+            }
+        </dd>
+
+        <dt>
+            <span>Description</span>
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.marketItem.ItemDescription)
+        </dd>
+
+        <dt>
+            <span>Quantity</span>
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.marketItem.Quantity)
+        </dd>
+
+        <dt>
+            <span>PPU</span>
+        </dt>
+
+        <dd>
+            @{
+                var price = Model.marketItem.PPU.ToString("c2");
+            }
+            @price
+        </dd>
+
+        <dt>
+            <span>Seller</span>
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.marketItem.User.UserName)
+        </dd>
+
+        <dt>
+            <span>Date Listed</span>
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.marketItem.ListedDate)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @if (Model.marketItem.UserId == User.Identity.GetUserId())
+    {
+        @Html.ActionLink("Edit", "Edit", new { id = Model.marketItem.SalesGUID })
+        <span>|</span>
+    }
+    @Html.ActionLink("Back to List", "Index")
+</p>

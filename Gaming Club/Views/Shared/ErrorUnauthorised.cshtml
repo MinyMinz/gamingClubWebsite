@@ -1,0 +1,19 @@
+﻿@using Microsoft.AspNet.Identity
+@model System.Web.Mvc.HandleErrorInfo
+
+@{
+    ViewBag.Title = "authError";
+}
+
+<h1 class="text-danger">Error.</h1>
+@if (User.Identity.IsAuthenticated && User.Identity.Name != "Admin")
+{
+<h2 class="text-danger">Unauthroised access to page, Please contact administrator </h2>
+}
+else
+{
+<h2 class="text-danger">Unauthroised access to page, Please login before using this page.</h2>
+}
+
+
+
